@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Click the Circle</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+    canvas {
+      border: 1px solid black;
+    }
+    .info {
+      font-size: 20px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    #gameOver {
+      font-size: 24px;
+      color: red;
+      display: none;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="info">
+    <div>Score: <span id="score">0</span></div>
+    <div>Time Left: <span id="timer">30</span> seconds</div>
+  </div>
+  <canvas id="gameCanvas"></canvas>
+  <div id="gameOver">Game Over! Refresh to Play Again.</div>
+  <script src="game.js"></script>
+</body>
+</html>
