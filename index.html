@@ -13,14 +13,26 @@
       height: 100vh;
       margin: 0;
       font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
     }
     canvas {
       border: 1px solid black;
+      display: block;
+      margin: 20px;
     }
     .info {
       font-size: 20px;
       margin-bottom: 10px;
       text-align: center;
+      position: absolute;
+      top: 10px;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+    }
+    .menu {
+      text-align: center;
+      font-size: 24px;
     }
     #gameOver {
       font-size: 24px;
@@ -28,15 +40,43 @@
       display: none;
       margin-top: 20px;
     }
+    #restartButton {
+      display: none;
+      font-size: 18px;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    #restartButton:hover {
+      background-color: #45a049;
+    }
+    #startButton {
+      font-size: 24px;
+      padding: 15px 30px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    #startButton:hover {
+      background-color: #0056b3;
+    }
   </style>
 </head>
 <body>
+  <div class="menu" id="menu">
+    <button id="startButton">Start Game</button>
+  </div>
   <div class="info">
-    <div>Score: <span id="score">0</span></div>
     <div>Time Left: <span id="timer">30</span> seconds</div>
+    <div>Score: <span id="score">0</span></div>
   </div>
   <canvas id="gameCanvas"></canvas>
-  <div id="gameOver">Game Over! Refresh to Play Again.</div>
+  <div id="gameOver">Game Over!</div>
+  <button id="restartButton">Restart Game</button>
 
   <script>
     const canvas = document.getElementById('gameCanvas');
@@ -44,6 +84,9 @@
     const scoreDisplay = document.getElementById('score');
     const timerDisplay = document.getElementById('timer');
     const gameOverDisplay = document.getElementById('gameOver');
+    const restartButton = document.getElementById('restartButton');
+    const startButton = document.getElementById('startButton');
+    const menu = document.getElementById('menu');
 
     // Responsive canvas
     function resizeCanvas() {
@@ -57,6 +100,8 @@
     let score = 0;
     let timeLeft = 30;
     let circle = { x: 0, y: 0, radius: 30 };
+    let gameStarted = false;
+    let timerInterval;
 
     // Generate random position for the circle
     function randomPosition() {
@@ -74,8 +119,18 @@
       ctx.closePath();
     }
 
+    // Vibration effect on click
+    function vibrateCircle() {
+      canvas.style.transform = "scale(1.1)";
+      setTimeout(() => {
+        canvas.style.transform = "scale(1)";
+      }, 100);
+    }
+
     // Handle circle click
     canvas.addEventListener('click', (event) => {
+      if (!gameStarted) return; // Ignore clicks if game hasn't started yet
+
       const rect = canvas.getBoundingClientRect();
       const mouseX = event.clientX - rect.left;
       const mouseY = event.clientY - rect.top;
@@ -88,6 +143,7 @@
         score++;
         scoreDisplay.textContent = score;
         circle.radius = Math.max(10, 30 - score); // Decrease size with a minimum radius of 10
+        vibrateCircle(); // Trigger vibration effect
         randomPosition();
         drawCircle();
       }
@@ -95,7 +151,7 @@
 
     // Timer function
     function startTimer() {
-      const timerInterval = setInterval(() => {
+      timerInterval = setInterval(() => {
         timeLeft--;
         timerDisplay.textContent = timeLeft;
 
@@ -110,15 +166,41 @@
     function endGame() {
       canvas.style.pointerEvents = 'none'; // Disable clicks
       gameOverDisplay.style.display = 'block';
+      restartButton.style.display = 'block'; // Show restart button
     }
 
-    // Initialize game
-    function initGame() {
+    // Start the game
+    function startGame() {
+      gameStarted = true;
+      score = 0;
+      timeLeft = 30;
+      scoreDisplay.textContent = score;
+      timerDisplay.textContent = timeLeft;
+      gameOverDisplay.style.display = 'none';
+      restartButton.style.display = 'none';
+      menu.style.display = 'none'; // Hide the start menu
       randomPosition();
       drawCircle();
       startTimer();
     }
-    initGame();
+
+    // Restart the game
+    function restartGame() {
+      score = 0;
+      timeLeft = 30;
+      scoreDisplay.textContent = score;
+      timerDisplay.textContent = timeLeft;
+      gameOverDisplay.style.display = 'none';
+      restartButton.style.display = 'none';
+      canvas.style.pointerEvents = 'auto'; // Enable clicks
+      startGame();
+    }
+
+    // Start button click handler
+    startButton.addEventListener('click', startGame);
+
+    // Restart button click handler
+    restartButton.addEventListener('click', restartGame);
   </script>
 </body>
 </html>
